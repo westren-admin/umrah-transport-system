@@ -206,9 +206,12 @@
         const transportName = g.transport?.company_name || 'غير محدد';
 
         // الحقول الخاصة بالموقع والفنادق
-        const meccaHotel = g.mecca_hotel || g.hotel_mecca || '-';
-        const medinaHotel = g.medina_hotel || g.hotel_medina || '-';
-
+        // البحث عن مسمى فندق مكة بجميع الاحتمالات الممكنة
+        const meccaHotel = g.makkah_hotel || g.mecca_hotel || g.hotel_makkah || g.hotel_mecca || '-';
+      
+        // البحث عن مسمى فندق المدينة بجميع الاحتمالات الممكنة
+        const medinaHotel = g.madinah_hotel || g.medina_hotel || g.hotel_madinah || g.hotel_medina || '-';
+        
         // معلومات السائق
         const driverName = assign?.driver_name || '-';
         const busNumber = assign?.bus_number || '-';
