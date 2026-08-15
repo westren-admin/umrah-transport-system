@@ -3,30 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام العمرة والنقل - لوحة الإدارة العامة</title>
+  <title>نظام العمرة والنقل - لوحة الإدارة العامة الشاملة</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- خط Cairo -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-  <style> body { font-family: 'Cairo', sans-serif; } </style>
+  <style> 
+    body { font-family: 'Cairo', sans-serif; } 
+    .table-container { overflow-x: auto; }
+  </style>
 </head>
-<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+<body class="bg-gray-100 min-h-screen p-3 md:p-6">
 
-  <div class="max-w-7xl mx-auto space-y-6">
+  <div class="max-w-[100%] mx-auto space-y-6">
     
     <!-- الترويسة ومعلومات الحساب -->
     <div class="flex flex-col sm:flex-row justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100 gap-4">
       <div>
         <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-          ⚙️ لوحة الإدارة العامة
+          ⚙️ لوحة الإدارة العامة الشاملة
         </h2>
-        <p class="text-xs text-gray-500 mt-1">إدارة ونظرة شمولية على جميع المجموعات وشركات النقل والوكلاء</p>
+        <p class="text-xs text-gray-500 mt-1">عرض سائر البيانات التفصيلية المدخلة من الوكلاء وشركات النقل</p>
       </div>
       <div class="flex items-center gap-3">
         <span id="adminName" class="text-xs font-semibold bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-lg border border-emerald-100">
           جاري التحقق...
         </span>
-        <button id="logoutBtn" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition flex items-center gap-1">
+        <button id="logoutBtn" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition">
           تسجيل الخروج
         </button>
       </div>
@@ -47,47 +50,51 @@
         <h3 id="statPending" class="text-2xl font-bold text-amber-600 mt-1">0</h3>
       </div>
       <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-        <p class="text-xs text-gray-500 font-semibold">رحلات تم تعيينها</p>
+        <p class="text-xs text-gray-500 font-semibold">رحلات مكتملة التعيين</p>
         <h3 id="statCompleted" class="text-2xl font-bold text-blue-600 mt-1">0</h3>
       </div>
     </div>
 
-    <!-- جدول إدارة الرحلات العام -->
+    <!-- جدول إدارة الرحلات الشامل -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
       
       <!-- شريط البحث والتحديث -->
       <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-center gap-3">
-        <div class="flex items-center gap-2 w-full md:w-auto">
-          <h3 class="font-bold text-gray-800 text-sm whitespace-nowrap">📊 سجل الرحلات الشامل</h3>
-          <span id="groupCountBadge" class="bg-gray-100 text-gray-600 text-xs px-2 py-0.5 rounded-full font-semibold">0</span>
+        <div class="flex items-center gap-2">
+          <h3 class="font-bold text-gray-800 text-sm whitespace-nowrap">📋 السجل التفصيلي المكتمل</h3>
+          <span id="groupCountBadge" class="bg-emerald-100 text-emerald-800 text-xs px-2.5 py-0.5 rounded-full font-bold">0</span>
         </div>
         
         <div class="flex items-center gap-3 w-full md:w-auto">
-          <input type="text" id="searchInput" placeholder="بحث برقم المجموعة، الشركة، أو السائق..." 
-                 class="w-full md:w-72 px-3 py-1.5 text-xs rounded-lg border border-gray-200 focus:outline-none focus:border-emerald-500 transition">
-          <button id="refreshBtn" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs px-3 py-2 rounded-lg font-semibold transition whitespace-nowrap">
+          <input type="text" id="searchInput" placeholder="بحث بأي معلومة (رقم، اسم، فندق، سائق)..." 
+                 class="w-full md:w-80 px-3 py-2 text-xs rounded-lg border border-gray-200 focus:outline-none focus:border-emerald-500 transition">
+          <button id="refreshBtn" class="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs px-4 py-2 rounded-lg font-semibold transition whitespace-nowrap">
             تحديث البيانات 🔄
           </button>
         </div>
       </div>
 
-      <!-- الجدول -->
-      <div class="overflow-x-auto">
+      <!-- الجدول الموسع -->
+      <div class="table-container">
         <table class="w-full text-right text-xs">
-          <thead class="bg-gray-50 text-gray-600 border-b border-gray-100">
+          <thead class="bg-gray-100 text-gray-700 border-b border-gray-200 uppercase font-bold">
             <tr>
-              <th class="p-3">رقم المجموعة</th>
-              <th class="p-3">الوكيل الخارجي</th>
-              <th class="p-3">شركة النقل</th>
-              <th class="p-3">العدد</th>
-              <th class="p-3">تاريخ ووقت الوصول</th>
-              <th class="p-3">الفنادق (مكة / المدينة)</th>
-              <th class="p-3">بيانات السائق والحافلة</th>
+              <th class="p-3 border-l border-gray-200"># المجموعه</th>
+              <th class="p-3 border-l border-gray-200">الوكيل الخارجي</th>
+              <th class="p-3 border-l border-gray-200">شركة النقل</th>
+              <th class="p-3 border-l border-gray-200">العدد</th>
+              <th class="p-3 border-l border-gray-200">تاريخ الوصول</th>
+              <th class="p-3 border-l border-gray-200">وقت الرحلة</th>
+              <th class="p-3 border-l border-gray-200">فندق مكة</th>
+              <th class="p-3 border-l border-gray-200">فندق المدينة</th>
+              <th class="p-3 border-l border-gray-200">اسم السائق</th>
+              <th class="p-3 border-l border-gray-200">رقم الحافلة</th>
+              <th class="p-3 border-l border-gray-200">جوال السائق</th>
               <th class="p-3">الحالة</th>
             </tr>
           </thead>
-          <tbody id="adminTableBody" class="divide-y divide-gray-100">
-            <tr><td colspan="8" class="text-center py-6 text-gray-400">جاري تحميل البيانات...</td></tr>
+          <tbody id="adminTableBody" class="divide-y divide-gray-200">
+            <tr><td colspan="12" class="text-center py-8 text-gray-400">جاري تحميل البيانات التفصيلية...</td></tr>
           </tbody>
         </table>
       </div>
@@ -95,13 +102,13 @@
 
   </div>
 
-  <!-- برمجة الربط والمنطق البرمجي -->
+  <!-- السكريبت البرمجي -->
   <script type="module">
     import { supabase } from './assets/js/supabase.js';
 
     let allGroups = [];
 
-    // 1. التحقق من أمان وصول المدير (Admin Access Check)
+    // 1. التحقق من أمان وصول المدير
     async function checkAdminAccess() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -117,7 +124,7 @@
           .single();
 
         if (error || profile?.role !== 'admin') {
-          alert('عذراً، هذه الصفحة مخصصة لحسابات الإدارة العامة فقط.');
+          alert('عذراً، هذه الصفحة مخصصة لحسابات الإدارة فقط.');
           window.location.href = 'index.html';
           return;
         }
@@ -125,24 +132,24 @@
         document.getElementById('adminName').textContent = `👤 ${profile.company_name || 'الإدارة العامة'}`;
         loadAllData();
       } catch (err) {
-        console.error('Check Access Error:', err);
+        console.error('Access Check Failed:', err);
         window.location.href = 'index.html';
       }
     }
 
-    // 2. جلب جميع البيانات والعلاقات من قاعدة البيانات
+    // 2. جلب جميع البيانات مع سائر العلاقات
     async function loadAllData() {
       const tbody = document.getElementById('adminTableBody');
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-gray-400">جاري تحديث البيانات...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="12" class="text-center py-8 text-gray-400">جاري استعلام القاعدة...</td></tr>`;
 
       try {
         const { data: groups, error } = await supabase
           .from('groups')
           .select(`
             *,
-            agent:profiles!agent_company_id(company_name),
-            transport:profiles!transport_company_id(company_name),
-            transport_assignments(driver_name, bus_number, driver_phone)
+            agent:profiles!agent_company_id(company_name, whatsapp),
+            transport:profiles!transport_company_id(company_name, whatsapp),
+            transport_assignments(*)
           `)
           .order('created_at', { ascending: false });
 
@@ -153,12 +160,12 @@
         renderTable(allGroups);
 
       } catch (err) {
-        console.error('Fetch Data Error:', err);
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-red-500 font-semibold">حدث خطأ أثناء جلب البيانات: ${err.message}</td></tr>`;
+        console.error('Fetch Error:', err);
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-8 text-red-500 font-semibold">حدث خطأ في جلب البيانات: ${err.message}</td></tr>`;
       }
     }
 
-    // 3. تحديث الكروت والإحصائيات
+    // 3. تحديث شريط الإحصائيات
     function updateStats(groups) {
       let totalPilgrims = 0;
       let pendingCount = 0;
@@ -177,19 +184,20 @@
       document.getElementById('statTotalPilgrims').textContent = totalPilgrims;
       document.getElementById('statPending').textContent = pendingCount;
       document.getElementById('statCompleted').textContent = completedCount;
-      document.getElementById('groupCountBadge').textContent = groups.length;
+      document.getElementById('groupCountBadge').textContent = `${groups.length} سجل`;
     }
 
-    // 4. عرض الجدول بالبيانات
+    // 4. بناء رندرة السجل بكل حقوله
     function renderTable(groups) {
       const tbody = document.getElementById('adminTableBody');
 
       if (!groups || groups.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-gray-400 font-semibold">لا توجد رحلات مسجلة تطابق البحث</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="12" class="text-center py-8 text-gray-400 font-semibold">لا توجد بيانات مطابقة</td></tr>`;
         return;
       }
 
       tbody.innerHTML = groups.map(g => {
+        // استخراج تفاصيل التعيين الخاصة بالسائق
         const assign = Array.isArray(g.transport_assignments) 
           ? g.transport_assignments[0] 
           : g.transport_assignments;
@@ -197,37 +205,40 @@
         const agentName = g.agent?.company_name || 'غير محدد';
         const transportName = g.transport?.company_name || 'غير محدد';
 
-        const isCompleted = g.status === 'تم تعيين النقل' || g.status === 'تم التعيين';
-        const statusBadge = isCompleted 
-          ? `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold">تم التعيين</span>`
-          : `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold">بانتظار التعيين</span>`;
-
-        const driverInfo = (assign && assign.driver_name)
-          ? `<div class="space-y-0.5">
-               <div class="font-bold text-gray-800">👤 ${assign.driver_name}</div>
-               <div class="text-gray-500">🚌 ${assign.bus_number} | 📱 ${assign.driver_phone}</div>
-             </div>`
-          : '<span class="text-gray-400 font-semibold">-</span>';
-
+        // الحقول الخاصة بالموقع والفنادق
         const meccaHotel = g.mecca_hotel || g.hotel_mecca || '-';
         const medinaHotel = g.medina_hotel || g.hotel_medina || '-';
 
+        // معلومات السائق
+        const driverName = assign?.driver_name || '-';
+        const busNumber = assign?.bus_number || '-';
+        const driverPhone = assign?.driver_phone || '-';
+
+        const isCompleted = g.status === 'تم تعيين النقل' || g.status === 'تم التعيين';
+        const statusBadge = isCompleted 
+          ? `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold whitespace-nowrap">تم التعيين</span>`
+          : `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold whitespace-nowrap">بانتظار التعيين</span>`;
+
         return `
-          <tr class="hover:bg-gray-50 transition">
-            <td class="p-3 font-bold text-gray-800">${g.group_number}</td>
-            <td class="p-3 font-semibold text-gray-700">${agentName}</td>
-            <td class="p-3 font-semibold text-emerald-700">${transportName}</td>
-            <td class="p-3 font-bold text-gray-800">${g.num_pilgrims} معتمر</td>
-            <td class="p-3 text-gray-600">${g.arrival_date || '-'} <span class="text-gray-400">(${g.flight_time || '-'})</span></td>
-            <td class="p-3 text-gray-600">🕋 ${meccaHotel} <br> 🕌 ${medinaHotel}</td>
-            <td class="p-3">${driverInfo}</td>
+          <tr class="hover:bg-blue-50/50 transition">
+            <td class="p-3 font-bold text-gray-900 border-l border-gray-100">${g.group_number || '-'}</td>
+            <td class="p-3 font-semibold text-gray-700 border-l border-gray-100">${agentName}</td>
+            <td class="p-3 font-semibold text-emerald-700 border-l border-gray-100">${transportName}</td>
+            <td class="p-3 font-bold text-gray-800 border-l border-gray-100 whitespace-nowrap">${g.num_pilgrims || 0} معتمر</td>
+            <td class="p-3 text-gray-600 border-l border-gray-100 whitespace-nowrap">${g.arrival_date || '-'}</td>
+            <td class="p-3 text-gray-600 border-l border-gray-100 whitespace-nowrap">${g.flight_time || '-'}</td>
+            <td class="p-3 text-gray-700 font-semibold border-l border-gray-100">${meccaHotel}</td>
+            <td class="p-3 text-gray-700 font-semibold border-l border-gray-100">${medinaHotel}</td>
+            <td class="p-3 font-bold text-blue-800 border-l border-gray-100 whitespace-nowrap">${driverName}</td>
+            <td class="p-3 text-gray-800 border-l border-gray-100 font-mono whitespace-nowrap">${busNumber}</td>
+            <td class="p-3 text-gray-800 border-l border-gray-100 font-mono whitespace-nowrap" dir="ltr">${driverPhone}</td>
             <td class="p-3">${statusBadge}</td>
           </tr>
         `;
       }).join('');
     }
 
-    // 5. محرك البحث الفوري
+    // 5. البحث والتصفية الشاملة
     document.getElementById('searchInput').addEventListener('input', (e) => {
       const term = e.target.value.trim().toLowerCase();
       if (!term) {
@@ -236,25 +247,38 @@
       }
 
       const filtered = allGroups.filter(g => {
+        const assign = Array.isArray(g.transport_assignments) ? g.transport_assignments[0] : g.transport_assignments;
+        
         const groupNum = String(g.group_number || '').toLowerCase();
         const agentName = (g.agent?.company_name || '').toLowerCase();
         const transportName = (g.transport?.company_name || '').toLowerCase();
-        const driverName = (g.transport_assignments?.[0]?.driver_name || g.transport_assignments?.driver_name || '').toLowerCase();
+        const meccaHotel = String(g.mecca_hotel || g.hotel_mecca || '').toLowerCase();
+        const medinaHotel = String(g.medina_hotel || g.hotel_medina || '').toLowerCase();
+        const driverName = String(assign?.driver_name || '').toLowerCase();
+        const busNum = String(assign?.bus_number || '').toLowerCase();
+        const driverPhone = String(assign?.driver_phone || '').toLowerCase();
 
-        return groupNum.includes(term) || agentName.includes(term) || transportName.includes(term) || driverName.includes(term);
+        return groupNum.includes(term) || 
+               agentName.includes(term) || 
+               transportName.includes(term) || 
+               meccaHotel.includes(term) || 
+               medinaHotel.includes(term) || 
+               driverName.includes(term) || 
+               busNum.includes(term) ||
+               driverPhone.includes(term);
       });
 
       renderTable(filtered);
     });
 
-    // 6. أحداث الأزرار (تحديث وخروج)
+    // 6. الأزرار الأحداث
     document.getElementById('refreshBtn').addEventListener('click', loadAllData);
     document.getElementById('logoutBtn').addEventListener('click', async () => {
       await supabase.auth.signOut();
       window.location.href = 'index.html';
     });
 
-    // تشغيل فحص الأمان والحصول على البيانات عند فتح الصفحة
+    // بدء التشغيل
     checkAdminAccess();
   </script>
 </body>
