@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام العمرة والنقل - لوحة الإدارة العامة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
+
+  <div class="max-w-6xl mx-auto space-y-6">
+    <!-- الترويسة وزر الخروج -->
+    <div class="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">⚙️ لوحة الإدارة العامة</h2>
+        <p class="text-xs text-gray-500">نظرة شمولية على جميع المجموعات وشركات النقل والوكلاء</p>
+      </div>
+      <button id="logoutBtn" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition">
+        تسجيل الخروج
+      </button>
+    </div>
+
+    <!-- كروت إحصائيات سريعة -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-xs text-gray-500 font-semibold">إجمالي المجموعات</p>
+        <h3 id="statTotalGroups" class="text-2xl font-bold text-gray-800 mt-1">0</h3>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-xs text-gray-500 font-semibold">إجمالي المعتمرين</p>
+        <h3 id="statTotalPilgrims" class="text-2xl font-bold text-emerald-600 mt-1">0</h3>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-xs text-gray-500 font-semibold">رحلات بانتظار النقل</p>
+        <h3 id="statPending" class="text-2xl font-bold text-yellow-600 mt-1">0</h3>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <p class="text-xs text-gray-500 font-semibold">رحلات مكتملة التعيين</p>
+        <h3 id="statCompleted" class="text-2xl font-bold text-blue-600 mt-1">0</h3>
+      </div>
+    </div>
+
+    <!-- جدول إدارة الرحلات العام -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-4 border-b border-gray-100 flex justify-between items-center">
+        <h3 class="font-bold text-gray-800 text-sm">📊 سجل الرحلات الشامل</h3>
+        <button id="refreshBtn" class="text-xs text-emerald-600 font-semibold hover:underline">تحديث البيانات 🔄</button>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-gray-50 text-gray-600">
+            <tr>
+              <th class="p-3">رقم المجموعة</th>
+              <th class="p-3">الوكيل الخارجي</th>
+              <th class="p-3">شركة النقل</th>
+              <th class="p-3">العدد</th>
+              <th class="p-3">الوصول</th>
+              <th class="p-3">بيانات السائق</th>
+              <th class="p-3">الحالة</th>
+            </tr>
+          </thead>
+          <tbody id="adminTableBody" class="divide-y divide-gray-100">
+            <tr><td colspan="7" class="text-center py-4 text-gray-400">جاري تحميل البيانات...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { supabase } from './assets/js/supabase.js';
+
+    async function initAdmin() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = 'index.html'; return; }
+      loadAllData();
+    }
+
+    async function loadAllData() {
+      const { data: groups, error } = await supabase
+        .from('groups')
+        .select(`
+          *,
+          agent:profiles!agent_company_id(company_name),
+          transport:profiles!transport_company_id(company_name),
+          transport_assignments(driver_name, bus_number, driver_phone)
+        `)
+        .order('created_at', { ascending: false });
+
+      const tbody = document.getElementById('adminTableBody');
+
+      if (error || !groups) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">حدث خطأ في جلب البيانات</td></tr>`;
+        return;
+      }
+
+      // تحديث الإحصائيات
+      let totalPilgrims = 0;
+      let pendingCount = 0;
+      let completedCount = 0;
+
+      groups.forEach(g => {
+        totalPilgrims += Number(g.num_pilgrims || 0);
+        if (g.status === 'تم تعيين النقل') completedCount++;
+        else pendingCount++;
+      });
+
+      document.getElementById('statTotalGroups').textContent = groups.length;
+      document.getElementById('statTotalPilgrims').textContent = totalPilgrims;
+      document.getElementById('statPending').textContent = pendingCount;
+      document.getElementById('statCompleted').textContent = completedCount;
+
+      // تعبئة الجدول
+      if (groups.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-gray-400">لا توجد رحلات مسجلة حتى الآن</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = groups.map(g => {
+        const assign = Array.isArray(g.transport_assignments) ? g.transport_assignments[0] : g.transport_assignments;
+        const agentName = g.agent?.company_name || 'غير محدد';
+        const transportName = g.transport?.company_name || 'غير محدد';
+        
+        const statusBadge = g.status === 'تم تعيين النقل' 
+          ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-semibold">مكتمل</span>`
+          : `<span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full font-semibold">معلق</span>`;
+
+        const driverInfo = (assign && assign.driver_name)
+          ? `👤 ${assign.driver_name} (${assign.bus_number})`
+          : '<span class="text-gray-400">لم يعين بعد</span>';
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3 font-bold text-gray-800">${g.group_number}</td>
+            <td class="p-3">${agentName}</td>
+            <td class="p-3">${transportName}</td>
+            <td class="p-3">${g.num_pilgrims} معتمر</td>
+            <td class="p-3">${g.arrival_date} (${g.flight_time})</td>
+            <td class="p-3 text-blue-600 font-semibold">${driverInfo}</td>
+            <td class="p-3">${statusBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('refreshBtn').addEventListener('click', loadAllData);
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
+    initAdmin();
+  </script>
+</body>
+</html>
