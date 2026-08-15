@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نظام النقل - تسجيل الدخول وإنشاء حساب</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- خط Cairo -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+  <style> body { font-family: 'Cairo', sans-serif; } </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-gray-100">
+    <!-- الترويسة -->
+    <div class="text-center mb-6">
+      <div class="bg-emerald-100 text-emerald-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
+        🕋
+      </div>
+      <h2 class="text-2xl font-bold text-gray-800">نظام إدارة العمرة والنقل</h2>
+      <p class="text-gray-500 text-sm mt-1">مرحباً بك، قم بتسجيل الدخول أو إنشاء حساب جديد</p>
+    </div>
+
+    <!-- تبويب التبديل -->
+    <div class="flex border-b border-gray-200 mb-6">
+      <button id="tabLogin" class="w-1/2 py-2 text-center border-b-2 border-emerald-600 font-bold text-emerald-600 outline-none transition">
+        تسجيل الدخول
+      </button>
+      <button id="tabRegister" class="w-1/2 py-2 text-center border-b-2 border-transparent font-semibold text-gray-500 hover:text-gray-700 outline-none transition">
+        حساب جديد
+      </button>
+    </div>
+
+    <!-- صندوق التنبيهات -->
+    <div id="alertBox" class="hidden mb-4 p-3 rounded-lg text-xs text-center font-semibold"></div>
+
+    <!-- نموذج تسجيل الدخول -->
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">البريد الإلكتروني</label>
+        <input type="email" id="loginEmail" required placeholder="name@company.com" 
+               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">كلمة المرور</label>
+        <input type="password" id="loginPassword" required placeholder="••••••••" 
+               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+      </div>
+      <button type="submit" id="loginBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition">
+        دخول
+      </button>
+    </form>
+
+    <!-- نموذج إنشاء حساب جديد -->
+    <form id="registerForm" class="space-y-4 hidden">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">اسم الشركة / الوكيل *</label>
+        <input type="text" id="regCompany" required placeholder="مثال: شركة البركة للعمرة" 
+               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">نوع الحساب *</label>
+        <select id="regRole" required class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition bg-white">
+          <option value="agent">وكيل خارجي</option>
+          <option value="transport_company">شركة نقل</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">رقم الواتساب *</label>
+        <input type="tel" id="regWhatsapp" required placeholder="0500000000" 
+               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">البريد الإلكتروني *</label>
+        <input type="email" id="regEmail" required placeholder="name@company.com" 
+               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1">كلمة المرور *</label>
+        <input type="password" id="regPassword" required placeholder="••••••••" 
+               class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none transition">
+      </div>
+      <button type="submit" id="regBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition">
+        إنشاء الحساب
+      </button>
+    </form>
+  </div>
+
+  <!-- السكربت البرمجي -->
+  <script type="module">
+    import { supabase } from './assets/js/supabase.js';
+
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const alertBox = document.getElementById('alertBox');
+
+    // التبديل بين النماذج
+    tabLogin.addEventListener('click', () => {
+      tabLogin.className = "w-1/2 py-2 text-center border-b-2 border-emerald-600 font-bold text-emerald-600 outline-none transition";
+      tabRegister.className = "w-1/2 py-2 text-center border-b-2 border-transparent font-semibold text-gray-500 hover:text-gray-700 outline-none transition";
+      loginForm.classList.remove('hidden');
+      registerForm.classList.add('hidden');
+      alertBox.classList.add('hidden');
+    });
+
+    tabRegister.addEventListener('click', () => {
+      tabRegister.className = "w-1/2 py-2 text-center border-b-2 border-emerald-600 font-bold text-emerald-600 outline-none transition";
+      tabLogin.className = "w-1/2 py-2 text-center border-b-2 border-transparent font-semibold text-gray-500 hover:text-gray-700 outline-none transition";
+      registerForm.classList.remove('hidden');
+      loginForm.classList.add('hidden');
+      alertBox.classList.add('hidden');
+    });
+
+    // 1. معالجة تسجيل الدخول والتوجيه
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginBtn');
+
+      btn.disabled = true;
+      btn.innerText = 'جاري الدخول...';
+
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+
+        // جلب دور المستخدم لتوجيهه للصفحة المناسبة
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        showAlert('تم تسجيل الدخول بنجاح! جاري التوجيه...', 'bg-emerald-100 text-emerald-800');
+
+        setTimeout(() => {
+          if (profile?.role === 'agent') {
+            window.location.href = 'agent-form.html';
+          } else if (profile?.role === 'transport_company') {
+            window.location.href = 'transport-form.html';
+          } else {
+            window.location.href = 'dashboard.html';
+          }
+        }, 1000);
+
+      } catch (err) {
+        showAlert('خطأ في الدخول: ' + err.message, 'bg-red-100 text-red-700');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'دخول';
+      }
+    });
+
+    // 2. معالجة إنشاء الحساب وحفظ البيانات بـ profiles
+    registerForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const company_name = document.getElementById('regCompany').value;
+      const role = document.getElementById('regRole').value;
+      const whatsapp = document.getElementById('regWhatsapp').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      const btn = document.getElementById('regBtn');
+
+      btn.disabled = true;
+      btn.innerText = 'جاري التسجيل...';
+
+      try {
+        const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+        if (authError) throw authError;
+
+        if (authData.user) {
+          const { error: profileError } = await supabase.from('profiles').insert([
+            {
+              id: authData.user.id,
+              company_name: company_name,
+              role: role,
+              whatsapp: whatsapp,
+              is_active: true
+            }
+          ]);
+
+          if (profileError) throw profileError;
+
+          showAlert('تم إنشاء الحساب بنجاح! يمكنك الآن تسجيل الدخول.', 'bg-emerald-100 text-emerald-800');
+          registerForm.reset();
+          tabLogin.click();
+        }
+      } catch (err) {
+        showAlert('خطأ في التسجيل: ' + err.message, 'bg-red-100 text-red-700');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'إنشاء الحساب';
+      }
+    });
+
+    function showAlert(msg, classes) {
+      alertBox.className = `mb-4 p-3 rounded-lg text-xs text-center font-semibold ${classes}`;
+      alertBox.textContent = msg;
+      alertBox.classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
