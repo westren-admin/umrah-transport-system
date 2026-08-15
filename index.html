@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام النقل - تسجيل الدخول وإنشاء حساب</title>
+  <title>نظام العمرة والنقل - تسجيل الدخول</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- خط Cairo -->
@@ -87,7 +87,7 @@
     </form>
   </div>
 
-  <!-- السكربت البرمجي -->
+  <!-- البرمجة السلوكية والربط بـ Supabase -->
   <script type="module">
     import { supabase } from './assets/js/supabase.js';
 
@@ -114,7 +114,7 @@
       alertBox.classList.add('hidden');
     });
 
-    // 1. معالجة تسجيل الدخول والتوجيه
+    // 1. تسجيل الدخول والتحويل الذكي حسب الدور
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value;
@@ -122,14 +122,14 @@
       const btn = document.getElementById('loginBtn');
 
       btn.disabled = true;
-      btn.innerText = 'جاري الدخول...';
+      btn.innerText = 'جاري التحقق...';
 
       try {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
 
-        // جلب دور المستخدم لتوجيهه للصفحة المناسبة
-        const { data: profile } = await supabase
+        // جلب بيانات ملف المستخدم لمعرفة الدور (Role)
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('role')
           .eq('id', data.user.id)
@@ -138,14 +138,15 @@
         showAlert('تم تسجيل الدخول بنجاح! جاري التوجيه...', 'bg-emerald-100 text-emerald-800');
 
         setTimeout(() => {
-          if (profile?.role === 'agent') {
-            window.location.href = 'agent-form.html';
+          // منطق التوجيه بناءً على نوع الحساب (الكود المطلوبة)
+          if (profile?.role === 'admin') {
+            window.location.href = 'admin-dashboard.html'; // توجيه المدير
           } else if (profile?.role === 'transport_company') {
-            window.location.href = 'transport-form.html';
+            window.location.href = 'transport-form.html'; // توجيه شركة النقل
           } else {
-            window.location.href = 'dashboard.html';
+            window.location.href = 'agent-form.html'; // توجيه الوكيل الخارجي
           }
-        }, 1000);
+        }, 800);
 
       } catch (err) {
         showAlert('خطأ في الدخول: ' + err.message, 'bg-red-100 text-red-700');
@@ -155,7 +156,7 @@
       }
     });
 
-    // 2. معالجة إنشاء الحساب وحفظ البيانات بـ profiles
+    // 2. إنشاء حساب جديد
     registerForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const company_name = document.getElementById('regCompany').value;
@@ -166,7 +167,7 @@
       const btn = document.getElementById('regBtn');
 
       btn.disabled = true;
-      btn.innerText = 'جاري التسجيل...';
+      btn.innerText = 'جاري إنشاء الحساب...';
 
       try {
         const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
