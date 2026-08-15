@@ -3,179 +3,183 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>نظام النقل - إدخال بيانات المجموعة</title>
-  <!-- مكتبة Tailwind CSS للتنسيق العصري -->
+  <title>نظام النقل - إدخال وعرض المجموعات</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- الخطوط والأيقونات -->
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; }
-  </style>
+  <style> body { font-family: 'Cairo', sans-serif; } </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+<body class="bg-gray-100 min-h-screen p-4 md:p-8">
 
-  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-2xl border border-gray-100">
-    <!-- الترويسة -->
-    <div class="text-center mb-8">
-      <div class="bg-emerald-100 text-emerald-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">
-        🕋
+  <div class="max-w-4xl mx-auto space-y-6">
+    <!-- الترويسة وزر الخروج -->
+    <div class="flex justify-between items-center bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
+      <div>
+        <h2 class="text-xl font-bold text-gray-800">🕋 لوحة الوكيل الخارجي</h2>
+        <p class="text-xs text-gray-500">إضافة المجموعات ومتابعة حالة النقل الخاصة بك</p>
       </div>
-      <h2 class="text-2xl font-bold text-gray-800">إدخال بيانات مجموعة جديدة</h2>
-      <p class="text-gray-500 text-sm mt-1">قم بتعبئة البيانات لتوجيه الرحلة لشركة النقل المعنية</p>
+      <button id="logoutBtn" class="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg text-sm font-semibold transition">
+        تسجيل الخروج
+      </button>
     </div>
 
-    <!-- رسالة التنبيه/النجاح -->
-    <div id="alertBox" class="hidden mb-6 p-4 rounded-xl text-sm text-center font-semibold"></div>
+    <!-- نموذج إضافة مجموعة -->
+    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+      <h3 class="text-base font-bold text-gray-800 mb-4">إضافة مجموعة جديدة</h3>
+      <div id="alertBox" class="hidden mb-4 p-3 rounded-lg text-xs text-center font-semibold"></div>
 
-    <!-- النموذج -->
-    <form id="groupForm" class="space-y-5">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <!-- رقم المجموعة -->
+      <form id="agentForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">رقم المجموعة / المانفيست *</label>
-          <input type="text" id="group_number" required placeholder="مثال: G-1020" 
-                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">رقم المجموعة *</label>
+          <input type="text" id="group_number" required placeholder="G-101" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
-
-        <!-- عدد المعتمرين -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">عدد المعتمرين *</label>
-          <input type="number" id="num_pilgrims" required min="1" placeholder="مثال: 45" 
-                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">عدد المعتمرين *</label>
+          <input type="number" id="num_pilgrims" required placeholder="45" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
-
-        <!-- تاريخ الوصول -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">تاريخ الوصول *</label>
-          <input type="date" id="arrival_date" required 
-                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">تاريخ الوصول *</label>
+          <input type="date" id="arrival_date" required class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
-
-        <!-- وقت الوصول / الرحلة -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">وقت الوصول (الرحلة) *</label>
-          <input type="time" id="flight_time" required 
-                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">وقت الرحلة *</label>
+          <input type="time" id="flight_time" required class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
-
-        <!-- فندق مكة -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">فندق مكة المكرمة</label>
-          <input type="text" id="makkah_hotel" placeholder="اسم الفندق" 
-                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">فندق مكة</label>
+          <input type="text" id="makkah_hotel" placeholder="اسم الفندق" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
-
-        <!-- فندق المدينة -->
         <div>
-          <label class="block text-sm font-semibold text-gray-700 mb-1">فندق المدينة المنورة</label>
-          <input type="text" id="madinah_hotel" placeholder="اسم الفندق" 
-                 class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">فندق المدينة</label>
+          <input type="text" id="madinah_hotel" placeholder="اسم الفندق" class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none">
         </div>
+        <div class="md:col-span-2">
+          <label class="block text-xs font-semibold text-gray-700 mb-1">شركة النقل الموجهة *</label>
+          <select id="transport_company_id" required class="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 outline-none bg-white">
+            <option value="">جاري تحميل شركات النقل...</option>
+          </select>
+        </div>
+        <button type="submit" id="submitBtn" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-lg shadow transition">
+          حفظ وإرسال الرحلة
+        </button>
+      </form>
+    </div>
 
+    <!-- جدول مجموعات الوكيل -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <div class="p-4 border-b border-gray-100">
+        <h3 class="font-bold text-gray-800 text-sm">📋 مجموعاتي المسجلة وحالة النقل</h3>
       </div>
-
-      <!-- اختيار شركة النقل -->
-      <div>
-        <label class="block text-sm font-semibold text-gray-700 mb-1">شركة النقل الموجه لها *</label>
-        <select id="transport_company_id" required 
-                class="w-full px-4 py-2.5 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition bg-white">
-          <option value="">جاري تحميل الشركات...</option>
-        </select>
+      <div class="overflow-x-auto">
+        <table class="w-full text-right text-xs">
+          <thead class="bg-gray-50 text-gray-600">
+            <tr>
+              <th class="p-3">رقم المجموعة</th>
+              <th class="p-3">العدد</th>
+              <th class="p-3">الوصول</th>
+              <th class="p-3">الحالة</th>
+              <th class="p-3">بيانات السائق والحافلة</th>
+            </tr>
+          </thead>
+          <tbody id="myGroupsBody" class="divide-y divide-gray-100">
+            <tr><td colspan="5" class="text-center py-4 text-gray-400">جاري التحميل...</td></tr>
+          </tbody>
+        </table>
       </div>
-
-      <!-- زر الإرسال -->
-      <button type="submit" id="submitBtn" 
-              class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-200 flex items-center justify-center gap-2">
-        <span>إرسال البيانات</span>
-      </button>
-    </form>
+    </div>
   </div>
 
-  <!-- السكربت الخاص بهذه الصفحة -->
   <script type="module">
     import { supabase } from './assets/js/supabase.js';
 
     const alertBox = document.getElementById('alertBox');
-    const transportSelect = document.getElementById('transport_company_id');
-    const groupForm = document.getElementById('groupForm');
+    const companySelect = document.getElementById('transport_company_id');
+    let currentUser = null;
 
-    // 1. جلب شركات النقل المفعّلة عند تحميل الصفحة
-    async function loadTransportCompanies() {
-      try {
-        const { data, error } = await supabase
-          .from('profiles')
-          .select('id, company_name')
-          .eq('role', 'transport_company')
-          .eq('is_active', true);
-
-        if (error) throw error;
-
-        transportSelect.innerHTML = '<option value="">-- اختر شركة النقل --</option>';
-        if (data.length === 0) {
-          transportSelect.innerHTML = '<option value="">لا توجد شركات نقل مفعّلة حالياً</option>';
-          return;
-        }
-
-        data.forEach(company => {
-          const option = document.createElement('option');
-          option.value = company.id;
-          option.textContent = company.company_name;
-          transportSelect.appendChild(option);
-        });
-      } catch (err) {
-        showAlert('فشل جلب قائمة شركات النقل: ' + err.message, 'bg-red-100 text-red-700');
-      }
+    async function init() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { window.location.href = 'index.html'; return; }
+      currentUser = user;
+      loadCompanies();
+      loadMyGroups();
     }
 
-    // 2. معالجة حفظ بيانات المجموعة
-    groupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    async function loadCompanies() {
+      const { data } = await supabase.from('profiles').select('id, company_name').eq('role', 'transport_company');
+      companySelect.innerHTML = '<option value="">-- اختر شركة النقل --</option>';
+      data?.forEach(c => {
+        companySelect.innerHTML += `<option value="${c.id}">${c.company_name}</option>`;
+      });
+    }
 
-      // التحقق من تسجيل دخول المستخدم
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        showAlert('يجب عليك تسجيل الدخول أولاً لإرسال البيانات!', 'bg-yellow-100 text-yellow-800');
+    async function loadMyGroups() {
+      const { data } = await supabase
+        .from('groups')
+        .select('*, transport_assignments(*)')
+        .eq('agent_company_id', currentUser.id)
+        .order('created_at', { ascending: false });
+
+      const tbody = document.getElementById('myGroupsBody');
+      if (!data || data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-gray-400">لم تقم بإضافة أي مجموعات بعد</td></tr>`;
         return;
       }
 
-      const submitBtn = document.getElementById('submitBtn');
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'جاري الحفظ...';
+      tbody.innerHTML = data.map(g => {
+        const assign = g.transport_assignments?.[0] || g.transport_assignments;
+        const statusBadge = g.status === 'تم تعيين النقل' 
+          ? `<span class="bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">تم التعيين</span>`
+          : `<span class="bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">بانتظار النقل</span>`;
 
-      const payload = {
+        const driverDetails = assign ? `👤 ${assign.driver_name} | 🚌 ${assign.bus_number} | 📱 ${assign.driver_phone}` : '-';
+
+        return `
+          <tr class="hover:bg-gray-50">
+            <td class="p-3 font-bold">${g.group_number}</td>
+            <td class="p-3">${g.num_pilgrims} معتمر</td>
+            <td class="p-3">${g.arrival_date} (${g.flight_time})</td>
+            <td class="p-3">${statusBadge}</td>
+            <td class="p-3 text-gray-600">${driverDetails}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('agentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const groupData = {
         group_number: document.getElementById('group_number').value,
-        num_pilgrims: parseInt(document.getElementById('num_pilgrims').value),
+        num_pilgrims: document.getElementById('num_pilgrims').value,
         arrival_date: document.getElementById('arrival_date').value,
         flight_time: document.getElementById('flight_time').value,
         makkah_hotel: document.getElementById('makkah_hotel').value,
         madinah_hotel: document.getElementById('madinah_hotel').value,
-        transport_company_id: transportSelect.value,
-        agent_id: user.id
+        transport_company_id: companySelect.value,
+        agent_company_id: currentUser.id,
+        status: 'بانتظار النقل'
       };
 
-      try {
-        const { error } = await supabase.from('groups').insert([payload]);
-        if (error) throw error;
-
-        showAlert('تم حفظ المجموعة وإرسالها لشركة النقل بنجاح! 🎉', 'bg-emerald-100 text-emerald-800');
-        groupForm.reset();
-      } catch (err) {
-        showAlert('حدث خطأ أثناء الحفظ: ' + err.message, 'bg-red-100 text-red-700');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'إرسال البيانات';
+      const { error } = await supabase.from('groups').insert([groupData]);
+      if (error) {
+        showAlert('خطأ: ' + error.message, 'bg-red-100 text-red-700');
+      } else {
+        showAlert('تمت إضافة المجموعة بنجاح! 🎉', 'bg-emerald-100 text-emerald-800');
+        document.getElementById('agentForm').reset();
+        loadMyGroups();
       }
     });
 
+    document.getElementById('logoutBtn').addEventListener('click', async () => {
+      await supabase.auth.signOut();
+      window.location.href = 'index.html';
+    });
+
     function showAlert(msg, classes) {
-      alertBox.className = `mb-6 p-4 rounded-xl text-sm text-center font-semibold ${classes}`;
+      alertBox.className = `mb-4 p-3 rounded-lg text-xs text-center font-semibold ${classes}`;
       alertBox.textContent = msg;
       alertBox.classList.remove('hidden');
     }
 
-    // تشغيل جلب الشركات فور تحفيز الصفحة
-    loadTransportCompanies();
+    init();
   </script>
 </body>
 </html>
